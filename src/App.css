@@ -1,0 +1,41 @@
+main {
+  text-align: left;
+  padding: 24px;
+}
+
+.worker-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.worker-table th,
+.worker-table td {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background: var(--code-bg);
+}
+
+.as-of-slider {
+  margin: 16px 0;
+}
+
+.as-of-slider input[type='range'] {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.as-of-range-labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text);
+  font-size: 13px;
+}
