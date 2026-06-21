@@ -39,3 +39,18 @@ main {
   color: var(--text);
   font-size: 13px;
 }
+
+.submit-change-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 320px;
+  margin-bottom: 24px;
+}
+
+.submit-change-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}

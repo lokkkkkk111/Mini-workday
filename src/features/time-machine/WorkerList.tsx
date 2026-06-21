@@ -1,12 +1,13 @@
-import { seedWorkers } from '../../data/seed.ts';
 import { getWorkerStateAsOf } from '../../model/worker.ts';
 import { todayISODate } from './today.ts';
+import type { Worker } from '../../model/types.ts';
 
 interface WorkerListProps {
+  workers: Worker[];
   onSelectWorker: (workerId: string) => void;
 }
 
-export function WorkerList({ onSelectWorker }: WorkerListProps) {
+export function WorkerList({ workers, onSelectWorker }: WorkerListProps) {
   const today = todayISODate();
 
   return (
@@ -21,7 +22,7 @@ export function WorkerList({ onSelectWorker }: WorkerListProps) {
           </tr>
         </thead>
         <tbody>
-          {seedWorkers.map((worker) => {
+          {workers.map((worker) => {
             const state = getWorkerStateAsOf(worker, today);
             return (
               <tr key={worker.id} className="clickable-row" onClick={() => onSelectWorker(worker.id)}>

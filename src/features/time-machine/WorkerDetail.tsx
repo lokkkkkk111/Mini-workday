@@ -1,27 +1,26 @@
 import { useState } from 'react';
-import { seedWorkers } from '../../data/seed.ts';
-import { getWorkerStateAsOf } from '../../model/worker.ts';
+import type { FormEvent } from 'react';
+import { getLatestVersion, getWorkerStateAsOf } from '../../model/worker.ts';
 import { addDays, dayIndexToISODate, isoDateToDayIndex } from '../../model/date.ts';
 import { todayISODate } from './today.ts';
-import type { ISODate } from '../../model/types.ts';
+import type { ISODate, Worker, WorkerFields, WorkerVersion } from '../../model/types.ts';
 
 interface WorkerDetailProps {
-  workerId: string;
+  worker: Worker;
+  orgIds: string[];
   onBack: () => void;
+  onUpdateWorker: (worker: Worker) => void;
 }
 
-export function WorkerDetail({ workerId, onBack }: WorkerDetailProps) {
-  const worker = seedWorkers.find((w) => w.id === workerId);
+type ChangeEventType = 'COMPENSATION_CHANGE' | 'TRANSFER';
+
+export function WorkerDetail({ worker, orgIds, onBack, onUpdateWorker }: WorkerDetailProps) {
   const [asOfDate, setAsOfDate] = useState<ISODate>(todayISODate());
 
-  if (!worker) {
-    return (
-      <>
-        <button type="button" onClick={onBack}>← 返回列表</button>
-        <p>未找到该员工。</p>
-      </>
-    );
-  }
+  const [changeEventType, setChangeEventType] = useState<ChangeEventType>('COMPENSATION_CHANGE');
+  const [targetSalary, setTargetSalary] = useState('');
+  const [targetOrgId, setTargetOrgId] = useState(orgIds[0] ?? '');
+  const [changeEffectiveDate, setChangeEffectiveDate] = useState('');
 
   const effectiveDates = worker.versions.map((v) => v.effectiveDate);
   const earliestDate = effectiveDates.reduce((a, b) => (a < b ? a : b));
@@ -35,6 +34,30 @@ export function WorkerDetail({ workerId, onBack }: WorkerDetailProps) {
   const maxIndex = isoDateToDayIndex(maxDate);
 
   const state = getWorkerStateAsOf(worker, asOfDate);
+
+  function handleSubmitChange(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const latest = getLatestVersion(worker);
+    const fields: WorkerFields =
+      changeEventType === 'COMPENSATION_CHANGE'
+        ? { ...latest.fields, baseSalary: Number(targetSalary) }
+        : { ...latest.fields, supervisoryOrgId: targetOrgId };
+
+    const newVersion: WorkerVersion = {
+      versionId: crypto.randomUUID(),
+      effectiveDate: changeEffectiveDate,
+      entryMoment: new Date().toISOString(),
+      eventType: changeEventType,
+      isCorrection: false,
+      fields,
+    };
+
+    onUpdateWorker({ ...worker, versions: [...worker.versions, newVersion] });
+
+    setTargetSalary('');
+    setChangeEffectiveDate('');
+  }
 
   return (
     <>
@@ -77,6 +100,53 @@ export function WorkerDetail({ workerId, onBack }: WorkerDetailProps) {
           </tbody>
         </table>
       )}
+
+      <h3>提交变更</h3>
+      <form className="submit-change-form" onSubmit={handleSubmitChange}>
+        <label>
+          事件类型
+          <select
+            value={changeEventType}
+            onChange={(e) => setChangeEventType(e.target.value as ChangeEventType)}
+          >
+            <option value="COMPENSATION_CHANGE">调薪</option>
+            <option value="TRANSFER">转岗</option>
+          </select>
+        </label>
+
+        {changeEventType === 'COMPENSATION_CHANGE' ? (
+          <label>
+            新薪资
+            <input
+              type="number"
+              value={targetSalary}
+              onChange={(e) => setTargetSalary(e.target.value)}
+              required
+            />
+          </label>
+        ) : (
+          <label>
+            新所属组织
+            <select value={targetOrgId} onChange={(e) => setTargetOrgId(e.target.value)} required>
+              {orgIds.map((orgId) => (
+                <option key={orgId} value={orgId}>{orgId}</option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        <label>
+          生效日期
+          <input
+            type="date"
+            value={changeEffectiveDate}
+            onChange={(e) => setChangeEffectiveDate(e.target.value)}
+            required
+          />
+        </label>
+
+        <button type="submit">提交变更</button>
+      </form>
     </>
   );
 }

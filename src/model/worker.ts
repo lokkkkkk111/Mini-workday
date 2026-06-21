@@ -13,3 +13,24 @@ export function getWorkerStateAsOf(
     .sort((a, b) => a.effectiveDate.localeCompare(b.effectiveDate))
     .at(-1) ?? null;
 }
+
+// The most recently effective version, regardless of asOfDate. Every Worker
+// has at least one version (its HIRE), so this is never null.
+export function getLatestVersion(worker: Worker): WorkerVersion {
+  return worker.versions
+    .slice()
+    .sort((a, b) => a.effectiveDate.localeCompare(b.effectiveDate))
+    .at(-1)!;
+}
+
+// Distinct supervisoryOrgIds seen across all workers' versions, for use as
+// the option list in a "transfer to" picker (Epic 2 has no org registry yet).
+export function listSupervisoryOrgIds(workers: Worker[]): string[] {
+  const ids = new Set<string>();
+  for (const worker of workers) {
+    for (const version of worker.versions) {
+      ids.add(version.fields.supervisoryOrgId);
+    }
+  }
+  return [...ids].sort();
+}
