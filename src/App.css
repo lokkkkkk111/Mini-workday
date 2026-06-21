@@ -54,3 +54,47 @@ main {
   gap: 4px;
   font-size: 14px;
 }
+
+.version-history {
+  margin-bottom: 24px;
+}
+
+.future-version {
+  background: #fff8e1;
+}
+
+.future-badge,
+.active-badge,
+.backfilled-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
+.future-badge {
+  background: #fbbf24;
+  color: #7a4a00;
+}
+
+.future-hint {
+  color: #92660c;
+  font-size: 14px;
+}
+
+.active-version {
+  border-left: 4px solid #2563eb;
+}
+
+.active-badge {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.backfilled-badge {
+  background: #ede9fe;
+  color: #5b21b6;
+}

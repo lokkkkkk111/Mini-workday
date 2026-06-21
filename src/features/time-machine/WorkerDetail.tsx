@@ -35,6 +35,12 @@ export function WorkerDetail({ worker, orgIds, onBack, onUpdateWorker }: WorkerD
 
   const state = getWorkerStateAsOf(worker, asOfDate);
 
+  const sortedVersions = [...worker.versions].sort((a, b) => a.effectiveDate.localeCompare(b.effectiveDate));
+  const nextChangeDate = sortedVersions
+    .map((v) => v.effectiveDate)
+    .filter((d) => d > asOfDate)
+    .at(0);
+
   function handleSubmitChange(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -100,6 +106,48 @@ export function WorkerDetail({ worker, orgIds, onBack, onUpdateWorker }: WorkerD
           </tbody>
         </table>
       )}
+
+      {state && nextChangeDate && (
+        <p className="future-hint">提示：该状态将在 {nextChangeDate} 被新版本取代</p>
+      )}
+
+      <h3>版本历史</h3>
+      <table className="worker-table version-history">
+        <thead>
+          <tr>
+            <th>事件类型</th>
+            <th>生效日期</th>
+            <th>录入时刻</th>
+            <th>薪资</th>
+            <th>组织</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedVersions.map((v) => {
+            const isFuture = v.effectiveDate > asOfDate;
+            const isActive = v.versionId === state?.versionId;
+            const isBackfilled = v.entryMoment.slice(0, 10) > v.effectiveDate;
+            const rowClass = [isFuture && 'future-version', isActive && 'active-version']
+              .filter(Boolean)
+              .join(' ');
+            return (
+              <tr key={v.versionId} className={rowClass || undefined}>
+                <td>{v.eventType}</td>
+                <td>{v.effectiveDate}</td>
+                <td>{v.entryMoment}</td>
+                <td>{v.fields.baseSalary} {v.fields.currency}</td>
+                <td>{v.fields.supervisoryOrgId}</td>
+                <td>
+                  {isActive && <span className="active-badge">当前</span>}
+                  {isFuture && <span className="future-badge">未来生效</span>}
+                  {isBackfilled && <span className="backfilled-badge">追溯补录</span>}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
 
       <h3>提交变更</h3>
       <form className="submit-change-form" onSubmit={handleSubmitChange}>
