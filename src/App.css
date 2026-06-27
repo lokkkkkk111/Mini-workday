@@ -98,3 +98,47 @@ main {
   background: #ede9fe;
   color: #5b21b6;
 }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0 24px;
+}
+
+.tabs button {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background: var(--code-bg);
+  font-weight: 600;
+}
+
+ul.org-tree,
+.org-tree ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 24px;
+}
+
+ul.org-tree {
+  padding-left: 0;
+}
+
+.org-node {
+  display: flex;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.org-name {
+  font-weight: 600;
+}
+
+.org-manager {
+  color: var(--text);
+}

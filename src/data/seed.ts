@@ -1,4 +1,4 @@
-import type { Worker } from '../model/types.ts';
+import type { SupervisoryOrg, Worker } from '../model/types.ts';
 
 // Demo "today" is assumed to be mid-2026 (e.g. 2026-06-19): versions effective
 // on/before that date are already visible; the 2026-09-01 transfer is not yet.
@@ -189,5 +189,45 @@ export const seedWorkers: Worker[] = [
         },
       },
     ],
+  },
+];
+
+// 3-level supervisory org tree: org-exec -> {org-eng, org-sales, org-hr},
+// org-eng -> org-eng-platform (vacant, to demo the "经理空缺" empty state).
+export const seedOrgs: SupervisoryOrg[] = [
+  {
+    id: 'org-exec',
+    name: '高管办',
+    code: 'EXEC',
+    managerWorkerId: 'w-001',
+    parentOrgId: null,
+  },
+  {
+    id: 'org-eng',
+    name: '工程部',
+    code: 'ENG',
+    managerWorkerId: 'w-002',
+    parentOrgId: 'org-exec',
+  },
+  {
+    id: 'org-sales',
+    name: '销售部',
+    code: 'SALES',
+    managerWorkerId: 'w-005',
+    parentOrgId: 'org-exec',
+  },
+  {
+    id: 'org-hr',
+    name: '人力资源部',
+    code: 'HR',
+    managerWorkerId: 'w-006',
+    parentOrgId: 'org-exec',
+  },
+  {
+    id: 'org-eng-platform',
+    name: '平台组',
+    code: 'ENG-PLAT',
+    managerWorkerId: null,
+    parentOrgId: 'org-eng',
   },
 ];
