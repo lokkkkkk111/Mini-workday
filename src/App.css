@@ -132,7 +132,26 @@ ul.org-tree {
 .org-node {
   display: flex;
   gap: 12px;
-  padding: 6px 0;
+  align-items: baseline;
+  padding: 6px 10px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.org-node:hover {
+  background: var(--code-bg);
+}
+
+.org-node.selected {
+  background: var(--code-bg);
+  border-color: var(--text);
+  font-weight: 600;
 }
 
 .org-name {
@@ -141,4 +160,40 @@ ul.org-tree {
 
 .org-manager {
   color: var(--text);
+  font-weight: 400;
+}
+
+.org-tree-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.org-members-hint {
+  color: var(--text);
+  opacity: 0.7;
+}
+
+ul.org-members-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.org-members-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border, #e0e0e0);
+}
+
+.member-name {
+  font-weight: 600;
+}
+
+.member-role {
+  color: var(--text);
+  opacity: 0.8;
 }

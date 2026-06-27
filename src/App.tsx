@@ -46,6 +46,7 @@ function App() {
       ) : selectedWorker ? (
         <WorkerDetail
           worker={selectedWorker}
+          orgs={seedOrgs}
           orgIds={listSupervisoryOrgIds(workers)}
           onBack={() => setSelectedWorkerId(null)}
           onUpdateWorker={handleUpdateWorker}

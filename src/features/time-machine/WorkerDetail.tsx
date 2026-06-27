@@ -3,10 +3,11 @@ import type { FormEvent } from 'react';
 import { getLatestVersion, getWorkerStateAsOf } from '../../model/worker.ts';
 import { addDays, dayIndexToISODate, isoDateToDayIndex } from '../../model/date.ts';
 import { todayISODate } from './today.ts';
-import type { ISODate, Worker, WorkerFields, WorkerVersion } from '../../model/types.ts';
+import type { ISODate, SupervisoryOrg, Worker, WorkerFields, WorkerVersion } from '../../model/types.ts';
 
 interface WorkerDetailProps {
   worker: Worker;
+  orgs: SupervisoryOrg[];
   orgIds: string[];
   onBack: () => void;
   onUpdateWorker: (worker: Worker) => void;
@@ -14,7 +15,9 @@ interface WorkerDetailProps {
 
 type ChangeEventType = 'COMPENSATION_CHANGE' | 'TRANSFER';
 
-export function WorkerDetail({ worker, orgIds, onBack, onUpdateWorker }: WorkerDetailProps) {
+export function WorkerDetail({ worker, orgs, orgIds, onBack, onUpdateWorker }: WorkerDetailProps) {
+  // Resolve an org id to its display name; fall back to the raw id if unknown.
+  const orgName = (orgId: string) => orgs.find((o) => o.id === orgId)?.name ?? orgId;
   const [asOfDate, setAsOfDate] = useState<ISODate>(todayISODate());
 
   const [changeEventType, setChangeEventType] = useState<ChangeEventType>('COMPENSATION_CHANGE');
@@ -98,7 +101,7 @@ export function WorkerDetail({ worker, orgIds, onBack, onUpdateWorker }: WorkerD
             <tr><th>职位</th><td>{state.fields.jobProfile}</td></tr>
             <tr><th>职级</th><td>{state.fields.jobLevel}</td></tr>
             <tr><th>薪资</th><td>{state.fields.baseSalary} {state.fields.currency}</td></tr>
-            <tr><th>汇报组织</th><td>{state.fields.supervisoryOrgId}</td></tr>
+            <tr><th>汇报组织</th><td>{orgName(state.fields.supervisoryOrgId)}</td></tr>
             <tr><th>职位编号</th><td>{state.fields.positionId ?? '—'}</td></tr>
             <tr><th>公司</th><td>{state.fields.companyId}</td></tr>
             <tr><th>成本中心</th><td>{state.fields.costCenterId}</td></tr>
