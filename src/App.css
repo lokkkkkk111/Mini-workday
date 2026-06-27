@@ -154,6 +154,41 @@ ul.org-tree {
   font-weight: 600;
 }
 
+.org-node.covered {
+  background: #fdf2d0;
+  border-color: #e0b84c;
+}
+
+.org-node.covered.selected {
+  border-color: #b8860b;
+}
+
+.hrbp-badge {
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: #e0b84c;
+  color: #4a3500;
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.hrbp-anchor {
+  margin-bottom: 12px;
+}
+
+.hrbp-anchor select {
+  margin-left: 6px;
+  font: inherit;
+}
+
+.hrbp-coverage {
+  margin: 8px 0 0;
+  color: #8a6d1b;
+  font-size: 0.9em;
+}
+
 .org-name {
   font-weight: 600;
 }

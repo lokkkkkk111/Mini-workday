@@ -1,5 +1,5 @@
-import { getDirectMembers } from './org.ts';
-import type { Worker } from './types.ts';
+import { getDirectMembers, getSubtreeOrgIds } from './org.ts';
+import type { SupervisoryOrg, Worker } from './types.ts';
 
 function assertEqual<T>(actual: T, expected: T, message: string): void {
   if (actual !== expected) {
@@ -84,6 +84,39 @@ assertEqual(
   getDirectMembers(workers, 'org-2', '2026-09-15').map((w) => w.id).join(','),
   'w-a',
   '转岗生效后 w-a 的当前有效版本应把他放进 org-2'
+);
+
+// --- getSubtreeOrgIds ---------------------------------------------------------
+
+// exec -> {eng -> platform, sales}
+const orgs: SupervisoryOrg[] = [
+  { id: 'exec', name: '高管办', code: 'EXEC', managerWorkerId: null, parentOrgId: null },
+  { id: 'eng', name: '工程部', code: 'ENG', managerWorkerId: null, parentOrgId: 'exec' },
+  { id: 'platform', name: '平台组', code: 'PLAT', managerWorkerId: null, parentOrgId: 'eng' },
+  { id: 'sales', name: '销售部', code: 'SALES', managerWorkerId: null, parentOrgId: 'exec' },
+];
+
+const sortedIds = (set: Set<string>) => [...set].sort().join(',');
+
+// ④ 挂顶层 = 整棵树
+assertEqual(
+  sortedIds(getSubtreeOrgIds(orgs, 'exec')),
+  'eng,exec,platform,sales',
+  '锚定到顶层应覆盖整棵树的所有 org id'
+);
+
+// ⑤ 挂中层 = 自己 + 后代（工程部含平台组）
+assertEqual(
+  sortedIds(getSubtreeOrgIds(orgs, 'eng')),
+  'eng,platform',
+  '锚定到工程部应覆盖工程部及其后代平台组'
+);
+
+// ⑥ 挂叶子 = 仅自己
+assertEqual(
+  sortedIds(getSubtreeOrgIds(orgs, 'platform')),
+  'platform',
+  '锚定到叶子节点应只覆盖它自己'
 );
 
 console.log('org.test.ts: all assertions passed');
